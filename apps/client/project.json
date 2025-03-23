@@ -1,0 +1,52 @@
+{
+  "name": "personal-portfolio",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/personal-portfolio",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "personal-portfolio:build",
+        "dev": true,
+        "proxyConfig": "apps/personal-portfolio/proxy.conf.json"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "personal-portfolio:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "personal-portfolio:build:production",
+          "dev": false
+        }
+      }
+    },
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/personal-portfolio"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "build-standalone": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx nx run personal-portfolio:build",
+          "node apps/next-build-standalone.js personal-portfolio"
+        ],
+        "parallel": false
+      }
+    }
+  }
+}
+
