@@ -40,7 +40,7 @@ async function bootstrap() {
   app.use(compression()); // Compress responses after security middleware
 
   // ✅ Custom Middleware Next
-  app.use(RequestLoggerMiddleware);
+ // app.use( RequestLoggerMiddleware);
 
   // ✅ Enable API Versioning Early
   app.enableVersioning({

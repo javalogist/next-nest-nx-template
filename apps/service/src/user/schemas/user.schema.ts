@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { comparePassword, hashPassword } from '../../utils/bcrypt.util';
+import {hashPassword } from '../../utils/bcrypt.util';
 
 // Define document type
 export type UserDocument = HydratedDocument<User>;
@@ -43,8 +43,4 @@ UserSchema.pre<UserDocument>('save', async function(next) {
   next();
 });
 
-UserSchema.methods.comparePassword = async function(
-  candidatePassword: string
-): Promise<boolean> {
-  return comparePassword(candidatePassword, this.password);
-};
+

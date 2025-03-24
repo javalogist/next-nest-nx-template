@@ -3,9 +3,8 @@ import {
   ExecutionContext,
   Injectable,
   NestInterceptor,
-  UseInterceptors,
 } from '@nestjs/common';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, of } from 'rxjs';
 import { ServiceException } from '../exception/service.exception';
 import { ErrorResponse } from '../dto/api.response.dto';
 
@@ -16,8 +15,8 @@ export class ServiceCatchInterceptor implements NestInterceptor {
     return next.handle().pipe(
       catchError((err) => {
         if (err instanceof ServiceException) {
-          // Return custom ErrorResponse for ServiceException
-          return throwError(() => new ErrorResponse(err.message, err.getResponse()));
+          console.log('catching', `${err.message} and ${err.getResponse()}`);
+          return of(new ErrorResponse(err.message, err.stack));
         }
         // Re-throw for HttpExceptionFilter to catch
         return throwError(() => err);

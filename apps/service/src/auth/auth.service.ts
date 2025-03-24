@@ -6,6 +6,7 @@ import { User, UserDocument, Role } from '../user/schemas/user.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { ServiceException } from '../utils/exception/service.exception';
+import { comparePassword } from '../utils/bcrypt.util';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,7 @@ export class AuthService {
 
     if (!user) throw new ServiceException('Invalid email address');
 
-    const isPasswordValid = await (user as any).comparePassword(password);
+    const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid)
       throw new ServiceException('Invalid credentials');
 

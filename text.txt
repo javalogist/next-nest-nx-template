@@ -1,0 +1,72 @@
+ "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "defaultConfiguration": "development",
+      "options": {
+        "webpackConfig": "apps/service/webpack.config.js",
+        "outputPath": "dist/service"
+      },
+      "configurations": {
+        "production": {
+          "define": {
+            "process.env.NODE_ENV": "production"
+          },
+          "assets": [
+            {
+              "input": ".",
+              "glob": ".env",
+              "output": "."
+            }
+          ]
+        },
+        "development": {
+          "define": {
+            "process.env.NODE_ENV": "development"
+          }
+        }
+      }
+    },
+    "serve-test": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": [
+        "build"
+      ],
+      "options": {
+        "buildTarget": "service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service:build:development"
+        },
+        "production": {
+          "buildTarget": "service:build:production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service:build",
+        "watch": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service:build:development",
+          "watch": true
+        },
+        "production": {
+          "buildTarget": "service:build:production"
+        }
+      }
+    }
+,
+    "docker-build": {
+      "dependsOn": [
+        "build"
+      ],
+      "command": "docker build -f apps/service/Dockerfile . -t service"
+    }
+  }

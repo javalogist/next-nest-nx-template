@@ -13,6 +13,7 @@ export class ResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const response = context.switchToHttp().getResponse();
+        response.status(200);
         // ✅ Check if the response is SuccessResponse
         if (data instanceof SuccessResponse) {
           return ApiResponse.success(data.data, data.message);
@@ -20,7 +21,6 @@ export class ResponseInterceptor implements NestInterceptor {
 
         // ❌ Check if the response is ErrorResponse
         if (data instanceof ErrorResponse) {
-          response.status(200);
           return ApiResponse.error(data.message, process.env.NODE_ENV === 'development' ? data.stackTrace : '', data.data);
         }
 

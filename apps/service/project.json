@@ -6,38 +6,21 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
-      "defaultConfiguration": "production",
+      "executor": "nx:run-commands",
       "options": {
-        "webpackConfig": "apps/service/webpack.config.js",
-        "outputPath": "dist/service"
+        "command": "webpack-cli build",
+        "args": ["node-env=production"]
       },
       "configurations": {
-        "production": {
-          "define": {
-            "process.env.NODE_ENV": "production"
-          },
-          "assets": [
-            {
-              "input": ".",
-              "glob": ".env",
-              "output": "."
-            }
-          ]
-        },
         "development": {
-          "define": {
-            "process.env.NODE_ENV": "development"
-          }
+          "args": ["node-env=development"]
         }
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "service:build",
         "runBuildTargetDependencies": false
@@ -50,12 +33,7 @@
           "buildTarget": "service:build:production"
         }
       }
-    },
-    "docker-build": {
-      "dependsOn": [
-        "build"
-      ],
-      "command": "docker build -f apps/service/Dockerfile . -t service"
     }
   }
+
 }

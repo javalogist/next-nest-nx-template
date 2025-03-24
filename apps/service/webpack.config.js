@@ -2,6 +2,9 @@ const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const  path  = require('path');
 
 module.exports = {
+  output: {
+    path: path.resolve(__dirname, '../../dist/service'),
+  },
   plugins: [
     new NxAppWebpackPlugin({
       target: 'node',
