@@ -11,7 +11,7 @@
     "serve:all": "concurrently \"nx serve personal-portfolio\" \"nx serve service\"",
     "start:portfolio": "npm run build:portfolio && npm run serve:portfolio",
     "start:service": "npm run build:service && npm run serve:service",
-    "start:all": "npm run build:all && npm run serve:all",
+    "start:all": "npm run serve:all",
     "clean": "nx reset && rm -rf dist"
   },
   "private": true,

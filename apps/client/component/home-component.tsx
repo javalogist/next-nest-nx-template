@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Container,
   Paper,
@@ -7,12 +7,13 @@ import {
   Button,
   Stack,
   Box,
-} from "@mui/material";
-import { useForm } from "react-hook-form";
+} from '@mui/material';
+import { useForm } from 'react-hook-form';
 import { loginSchema } from '../schema/auth-validation.schema';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { clientApi } from '../config/axios-client.config';
 import { ApiEndpoints } from '../util/api-endpoints';
+import { ApiResponse } from '../../service/src/utils/dto/api.response.dto';
 
 export const HomeComponent = () => {
   // ✅ Setup form with react-hook-form and yup
@@ -26,22 +27,25 @@ export const HomeComponent = () => {
 
   // ✅ Handle form submission (for now, just log the data)
   const onSubmit = async (data: any) => {
-   try{
-     const res = await clientApi.post(ApiEndpoints.login,data);
-     console.log(res);
-   }catch(e){
-     console.error(e);
-   }
+    try {
+      const res = await clientApi.post<ApiResponse<string>>(
+        ApiEndpoints.login,
+        data
+      );
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ marginTop: "5rem" }}>
+    <Container maxWidth="sm" sx={{ marginTop: '5rem' }}>
       <Paper
         elevation={4}
         sx={{
-          padding: "2rem",
-          textAlign: "center",
-          backgroundColor: "background.paper",
+          padding: '2rem',
+          textAlign: 'center',
+          backgroundColor: 'background.paper',
         }}
       >
         <Typography variant="h4" color="primary" gutterBottom>
@@ -59,7 +63,7 @@ export const HomeComponent = () => {
               type="email"
               variant="outlined"
               fullWidth
-              {...register("email")}
+              {...register('email')}
               error={!!errors.email}
               helperText={errors.email?.message}
             />
@@ -68,7 +72,7 @@ export const HomeComponent = () => {
               type="password"
               variant="outlined"
               fullWidth
-              {...register("password")}
+              {...register('password')}
               error={!!errors.password}
               helperText={errors.password?.message}
             />
@@ -85,7 +89,7 @@ export const HomeComponent = () => {
         </form>
 
         {/* ✅ Signup Button */}
-        <Box sx={{ marginTop: "1rem" }}>
+        <Box sx={{ marginTop: '1rem' }}>
           <Typography variant="body2" color="text.secondary">
             Don’t have an account?
           </Typography>
@@ -96,7 +100,7 @@ export const HomeComponent = () => {
       </Paper>
 
       {/* ✅ Footer */}
-      <Box sx={{ marginTop: "3rem", textAlign: "center" }}>
+      <Box sx={{ marginTop: '3rem', textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           © 2025 John Doe. All rights reserved.
         </Typography>
