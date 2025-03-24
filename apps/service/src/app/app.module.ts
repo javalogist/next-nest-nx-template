@@ -18,6 +18,7 @@ import { ModelTransformerModule } from '../model-transformer/model-transformer.m
 // ✅ Global Guards & Filters
 import { ThrottlerGuard } from '@nestjs/throttler';
 import {
+  corsConfig,
   HttpExceptionFilter,
   JwtAuthGuard,
   jwtConfig,
@@ -36,7 +37,14 @@ import {
       isGlobal: true,
       envFilePath:
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
-      load: [throttleConfig, jwtConfig],
+      load: [
+        corsConfig,
+        throttleConfig,
+        jwtConfig({
+          algorithm: 'HS256', // Custom property
+          audience: 'my-app', // Another new property
+        }),
+      ],
     }),
 
     // ✅ Configure ThrottlerModule with ConfigService

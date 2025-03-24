@@ -59,7 +59,9 @@ async function bootstrap() {
   );
 
   // ✅ Enable CORS after Security Middleware
-  app.enableCors(configService.get('cors'));
+  app.enableCors({
+    ...configService.get('cors'),
+  });
 
   // ✅ Start Listening
   const port = configService.get<number>('PORT') || 3000;
