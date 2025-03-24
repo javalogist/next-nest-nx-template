@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { ModelTransformerService } from './model-transformer.service';
-import { BaseController } from '../utils/base.controller';
+import { BaseController } from '@shared/server';
 
 @Controller('model-transformer')
 export class ModelTransformerController extends BaseController {

@@ -2,11 +2,14 @@ import {
   Injectable
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, Role } from '../user/schemas/user.schema';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { ServiceException } from '../utils/exception/service.exception';
-import { comparePassword } from '../utils/bcrypt.util';
+import {
+  comparePassword, Role,
+  ServiceException,
+  User,
+  UserDocument
+} from '@shared/server';
 
 @Injectable()
 export class AuthService {

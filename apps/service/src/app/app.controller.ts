@@ -1,24 +1,29 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Public } from '../auth/decorator/public.decorator';
-import { HealthCheck, HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
-import { BaseController } from '../utils/base.controller';
+import {
+  HealthCheck,
+  HealthCheckService,
+  HttpHealthIndicator,
+} from '@nestjs/terminus';
+import { BaseController, Public, SuccessResponse } from '@shared/server';
 
 @Controller()
 export class AppController extends BaseController {
   constructor(
     private healthCheckService: HealthCheckService,
     private http: HttpHealthIndicator,
-    private readonly appService: AppService) {
+    private readonly appService: AppService
+  ) {
     super();
   }
 
-  @Get("health")
+  @Get('health')
   @Public()
   @HealthCheck()
-  checkHealth() {
-    return this.healthCheckService.check([
-      () => this.http.pingCheck('nestjs', 'https://docs.nestjs.com')
+  async checkHealth() {
+    const data = await this.healthCheckService.check([
+      () => this.http.pingCheck('nestjs', 'https://docs.nestjs.com'),
     ]);
+    return new SuccessResponse(data, 'Health check completed successfully');
   }
 }

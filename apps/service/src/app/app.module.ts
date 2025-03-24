@@ -14,20 +14,20 @@ import { UserModule } from '../user/user.module';
 import { ModelTransformerModule } from '../model-transformer/model-transformer.module';
 
 // ✅ Configuration Files
-import { mongoConfig } from '../config/mongo.config';
-import jwtConfig from '../config/jwt.config';
-import throttleConfig from '../config/throttle.config';
-
 
 // ✅ Global Guards & Filters
-import { RolesGuard } from '../auth/guard/roles.guard';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { HttpExceptionFilter } from '../utils/filter/http-exception.filter';
+import {
+  HttpExceptionFilter,
+  JwtAuthGuard,
+  jwtConfig,
+  ResponseInterceptor,
+  RolesGuard,
+  throttleConfig,
+  WinstonConfig,
+} from '@shared/server';
 
 // ✅ Global Interceptors
-import { ResponseInterceptor } from '../utils/interceptor/response.interceptor';
-import { WinstonConfig } from '../config/winston.config';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { WinstonConfig } from '../config/winston.config';
       isGlobal: true,
       envFilePath:
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
-      load: [throttleConfig, jwtConfig]
+      load: [throttleConfig, jwtConfig],
     }),
 
     // ✅ Configure ThrottlerModule with ConfigService
@@ -46,9 +46,9 @@ import { WinstonConfig } from '../config/winston.config';
       useFactory: (config: ConfigService) => [
         {
           ttl: config.get<number>('throttle.ttl'),
-          limit: config.get('throttle.limit')
-        }
-      ]
+          limit: config.get('throttle.limit'),
+        },
+      ],
     }),
 
     // ✅ MongoDB Configuration
@@ -56,10 +56,10 @@ import { WinstonConfig } from '../config/winston.config';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         return {
-          uri: configService.get<string>('MONGO_URI')
+          uri: configService.get<string>('MONGO_URI'),
         };
       },
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
 
     // ✅ External Modules
@@ -69,7 +69,7 @@ import { WinstonConfig } from '../config/winston.config';
     // ✅ Application Feature Modules
     AuthModule,
     UserModule,
-    ModelTransformerModule
+    ModelTransformerModule,
   ],
   controllers: [AppController],
   providers: [
@@ -77,32 +77,31 @@ import { WinstonConfig } from '../config/winston.config';
     // ✅ Global Exception Filter
     {
       provide: APP_FILTER,
-      useClass: HttpExceptionFilter
+      useClass: HttpExceptionFilter,
     },
 
     // ✅ Global Guards (Order Matters)
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: ThrottlerGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard // Auth Guard for JWT validation
+      useClass: JwtAuthGuard, // Auth Guard for JWT validation
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard // Role-based Access Control (RBAC)
+      useClass: RolesGuard, // Role-based Access Control (RBAC)
     },
 
     // ✅ Global Interceptor
     {
       provide: APP_INTERCEPTOR,
-      useClass: ResponseInterceptor
+      useClass: ResponseInterceptor,
     },
 
     // ✅ Application Service
-    AppService
-  ]
+    AppService,
+  ],
 })
-export class AppModule {
-}
+export class AppModule {}
