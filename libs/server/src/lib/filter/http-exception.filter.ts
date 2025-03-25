@@ -3,13 +3,16 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiResponse } from '../dtos';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger('ExceptionFilter');
+
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -27,12 +30,21 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // If we're in development mode, attach the stack trace; otherwise, send an empty string.
     const stackTrace = isDevMode
-      ? (exception.stack || 'Stack trace not available')
+      ? exception.stack || 'Stack trace not available'
       : '';
-
+    this.logger.error(
+      `HTTP ${status} - Error Message: ${JSON.stringify(message)}`
+    );
     // Send the response with the error details.
     response
       .status(status)
-      .json(ApiResponse.error(message, null, stackTrace));
+      .json(
+        ApiResponse.error(
+          message,
+          exceptionResponse.data,
+          exceptionResponse.error,
+          stackTrace
+        )
+      );
   }
 }

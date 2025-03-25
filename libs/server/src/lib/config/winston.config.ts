@@ -1,70 +1,92 @@
-import { ConfigService } from '@nestjs/config';
-import { Injectable, LoggerService } from '@nestjs/common';
-import { createLogger, format, Logger, transports } from 'winston';
-import * as winstonMongoDB from 'winston-mongodb';
+  import { ConfigService } from '@nestjs/config';
+  import { Injectable, LoggerService } from '@nestjs/common';
+  import { createLogger, format, Logger, transports } from 'winston';
+  import * as winstonMongoDB from 'winston-mongodb';
+  import * as winston from 'winston';
 
-@Injectable()
-export class WinstonConfig implements LoggerService {
-  private logger: Logger;
+  // 🎨 Define custom log colors (optional)
+  winston.addColors({
+    info: 'green',
+    warn: 'yellow',
+    error: 'red',
+    debug: 'blue',
+    verbose: 'magenta',
+  });
 
-  constructor(private configService: ConfigService) {
-    const isProduction = process.env['NODE_ENV'] === 'production';
-    const mongoUri = this.configService.get<string>('MONGO_URI');
-    const appName = this.configService.get<string>('APP_NAME');
+  @Injectable()
+  export class WinstonConfig implements LoggerService {
+    private readonly logger: Logger;
 
-    this.logger = createLogger({
-      level: 'info',
-      format: format.combine(
-        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        format.errors({ stack: true }),
-        format.splat(),
-        format.printf(({ timestamp, level, message, context }) => {
-          return `${timestamp} [${
-            context || appName
-          }] ${level}: ${message}`;
-        })
-      ),
-      transports: [
-        new transports.Console(),
-        ...(isProduction
-          ? [
+    constructor(private configService: ConfigService) {
+      const isProduction =
+        this.configService.get<string>('NODE_ENV', 'development') ===
+        'production';
+      const mongoUri = this.configService.get<string>('MONGO_URI', '');
+      const appName = this.configService.get<string>('APP_NAME', 'MyApp');
+
+      const mongoTransports = isProduction
+        ? [
             new winstonMongoDB.MongoDB({
               level: 'info',
-              db: mongoUri!,
+              db: mongoUri,
               collection: 'app_logs',
               capped: true,
-              cappedSize: 5242880
+              cappedSize: 5242880,
             }),
             new winstonMongoDB.MongoDB({
               level: 'error',
-              db: mongoUri!,
+              db: mongoUri,
               collection: 'error_logs',
               capped: true,
-              cappedSize: 5242880
-            })
+              cappedSize: 5242880,
+            }),
           ]
-          : [])
-      ]
-    });
-  }
+        : [];
 
-  log(message: any, context?: string) {
-    this.logger.info(message, { context });
-  }
+      // 🎨 Add colorized format
+      this.logger = createLogger({
+        level: 'info',
+        format: format.combine(
+          format.colorize({
+            all: true, // Colorize all logs
+          }),
+          format.timestamp({ format: 'YYYY-MM-DD hh:mm:ss a ' }),
+          format.errors({ stack: true }),
+          format.splat(),
+          format.printf(({ timestamp, level, message, context }) => {
+            return `[${appName}] - ${timestamp} ${level} [${context}]: ${message}`;
+          })
+        ),
+        transports: [
+          new transports.Console({
+            level: isProduction ? 'info' : 'debug',
+          }),
+          ...mongoTransports,
+        ],
+      });
+    }
 
-  error(message: any, trace?: string, context?: string) {
-    this.logger.error(message, { trace, context });
-  }
+    log(message: any, context?: string) {
+      this.logger.info(message, { context });
+    }
 
-  warn(message: any, context?: string) {
-    this.logger.warn(message, { context });
-  }
+    error(message: any, trace?: string, context?: string) {
+      this.logger.error({
+        message,
+        trace: trace || new Error().stack,
+        context,
+      });
+    }
 
-  debug?(message: any, context?: string) {
-    this.logger.debug(message, { context });
-  }
+    warn(message: any, context?: string) {
+      this.logger.warn(message, { context });
+    }
 
-  verbose?(message: any, context?: string) {
-    this.logger.verbose(message, { context });
+    debug?(message: any, context?: string) {
+      this.logger.debug(message, { context });
+    }
+
+    verbose?(message: any, context?: string) {
+      this.logger.verbose(message, { context });
+    }
   }
-}

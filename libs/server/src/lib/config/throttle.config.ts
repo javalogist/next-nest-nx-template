@@ -1,6 +1,13 @@
-import { registerAs } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
+import { ThrottlerModuleOptions } from '@nestjs/throttler';
 
-export const throttleConfig =  registerAs('throttle', () => ({
-  ttl: parseInt(process.env['THROTTLE_TTL'] ?? '10') || 60, // Default 60 seconds
-  limit: parseInt(process.env['THROTTLE_LIMIT'] ?? '10') || 10, // Default 10 requests
-}));
+export const throttleConfig = (
+  configService: ConfigService,
+): ThrottlerModuleOptions => ({
+  throttlers: [
+    {
+      ttl: configService.get<number>('THROTTLE_TTL', 60), // Time in seconds
+      limit: configService.get<number>('THROTTLE_LIMIT', 10), // Max requests allowed
+    },
+  ],
+});

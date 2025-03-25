@@ -1,14 +1,18 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class ServiceException extends HttpException {
-  constructor(message: string, error?: any, status: number = HttpStatus.OK) {
-
-    // If we're in dev mode, add stack trace to the response
+  constructor(
+    message: string,
+    error?: any,
+    data?: any,
+    status: number = HttpStatus.OK
+  ) {
     const response = {
       status,
       message,
-      error: error || null,
-      stack: new Error().stack // Include stack trace only in development
+      data: data || null,
+      error: error || 'Validation failed',
+      stack: new Error().stack,
     };
 
     super(response, status);

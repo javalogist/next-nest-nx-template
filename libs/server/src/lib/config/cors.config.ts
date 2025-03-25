@@ -1,13 +1,14 @@
-import { registerAs } from '@nestjs/config';
+// src/config/cors.config.ts
+import { ConfigService } from '@nestjs/config';
 
-export const corsConfig = registerAs('cors', () => {
-  return {
-    origins: process.env['ALLOWED_ORIGINS']
-      ? process.env['ALLOWED_ORIGINS'].split(',').map((origin) => origin.trim())
-      : ['http://localhost:3000'],
-    methods: process.env['ALLOWED_METHODS']
-      ? process.env['ALLOWED_METHODS'].split(',').map((method) => method.trim())
-      : ['GET'],
-    credentials: process.env['ALLOW_CREDENTIALS'] ?? (false as boolean),
-  };
+export const corsConfig = (configService: ConfigService) => ({
+  origin: configService
+    ?.get<string>('ALLOWED_ORIGINS')
+    ?.split(',')
+    .map((origin) => origin.trim()) ?? ['http://localhost:3000'],
+  methods: configService
+    ?.get<string>('ALLOWED_METHODS')
+    ?.split(',')
+    .map((method) => method.trim()) ?? ['GET'],
+  credentials: configService.get<boolean>('ALLOW_CREDENTIALS') === true, // Boolean conversion
 });

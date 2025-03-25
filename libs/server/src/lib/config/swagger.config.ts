@@ -1,18 +1,24 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-export const setupSwagger = (app: INestApplication) => {
+export const setupSwagger = (
+  app: INestApplication,
+  configService: ConfigService
+) => {
+  const appName = configService.get<string>('APP_NAME', 'my-app');
+  const version = configService.get<string>('API_VERSION', '1');
   const config = new DocumentBuilder()
-    .setTitle('Kodevy-Core API')
-    .setDescription('API Documentation for Kodevy Backend')
-    .setVersion('1.0')
+    .setTitle(appName)
+    .setDescription(`Swagger API Documentation for ${appName}`)
+    .setVersion(version)
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'Authorization',
-        in: 'header'
+        in: 'header',
       },
       'JWT-auth' // Name for the security
     )
@@ -23,17 +29,13 @@ export const setupSwagger = (app: INestApplication) => {
   // Setup Swagger UI at /api-docs
   SwaggerModule.setup('api-docs', app, document, {
     swaggerOptions: {
-      persistAuthorization: true // Keeps JWT auth after page refresh
-    }
+      persistAuthorization: true, // Keeps JWT auth after page refresh
+    },
   });
 
   // Expose the JSON spec at /swagger-json
-  app.getHttpAdapter().get("/api/v1/swagger-json", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
+  app.getHttpAdapter().get('/api/v1/swagger-json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
     res.send(document);
   });
-  // Generate Postman collection and save it
-  // const fs = require('fs');
-  // fs.writeFileSync('./postman-collection.json', JSON.stringify(document, null, 2));
-
 };

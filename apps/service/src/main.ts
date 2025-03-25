@@ -10,7 +10,13 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import { HttpExceptionFilter, setupSwagger, WinstonConfig } from '@shared/server';
+import {
+  corsConfig,
+  HttpExceptionFilter,
+  RequestLoggerMiddleware,
+  setupSwagger,
+  WinstonConfig,
+} from '@shared/server';
 
 const globalPrefix = 'api';
 
@@ -25,7 +31,7 @@ async function bootstrap() {
   // ✅ Enable API Versioning
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: '1'
+    defaultVersion: configService.get<string>('API_VERSION'),
   });
 
   // ✅ Security Middleware First
@@ -38,17 +44,15 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // Strip non-whitelisted properties
       forbidNonWhitelisted: true, // Reject requests with unknown properties
-      transform: true // Automatically transform payloads to DTOs
+      transform: true, // Automatically transform payloads to DTOs
     })
   );
 
   // ✅ Enable CORS after Security Middleware
-  app.enableCors({
-    ...configService.get('cors')
-  });
+  app.enableCors(corsConfig(configService));
 
-  // ✅ Setup Swagger after Versioning
-  setupSwagger(app);
+  // ✅ Setup Swagger
+  setupSwagger(app, configService);
 
   app.useGlobalFilters(new HttpExceptionFilter());
 

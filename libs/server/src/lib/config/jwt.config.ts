@@ -1,9 +1,9 @@
-import { registerAs } from '@nestjs/config';
+// src/config/jwt.config.ts
+import { ConfigService } from '@nestjs/config';
 
-export const jwtConfig = (overrides?: Partial<Record<string, any>>) => {
-  return registerAs('jwt', () => ({
-    secret: process.env['JWT_SECRET'] || 'default-secret',
-    expiresIn: process.env['JWT_EXPIRES_IN'] || '1d',
-    ...overrides, // Allow overriding or adding new properties
-  }));
-};
+export const jwtConfig = (configService: ConfigService) => ({
+  secret: configService.get<string>('JWT_SECRET', 'default-secret'),
+  expiresIn: configService.get<string>('JWT_EXPIRES_IN', '1d'),
+  algorithm: configService.get<string>('JWT_ALGORITHM', 'HS256'),
+  audience: configService.get<string>('APP_NAME', 'my-app'),
+});

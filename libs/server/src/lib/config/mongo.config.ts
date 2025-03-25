@@ -1,7 +1,13 @@
-import { MongooseModuleOptions } from '@nestjs/mongoose';
+import {
+  MongooseModuleFactoryOptions
+} from '@nestjs/mongoose';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-export const mongoConfig: MongooseModuleOptions = {
+export const mongoConfig = (
+  configService: ConfigService
+): MongooseModuleFactoryOptions => ({
+  uri: configService.get<string>('MONGO_URI'),
   onConnectionCreate: (connection) => {
     connection.on('connected', () =>
       Logger.log('✅ Successfully connected to MongoDB')
@@ -19,4 +25,4 @@ export const mongoConfig: MongooseModuleOptions = {
 
     return connection;
   },
-};
+});
