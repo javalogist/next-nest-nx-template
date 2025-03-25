@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  ApiResponse,
   BaseController,
   LoginDto,
   Public,
   RegisterDto,
   Role,
-  Roles,
-  SuccessResponse,
+  Roles
 } from '@shared/server';
 
 @Controller('auth')
@@ -25,7 +25,7 @@ export class AuthController extends BaseController {
       registerDto.password,
       registerDto.roles
     );
-    return new SuccessResponse(null, 'User registered successfully.');
+    return ApiResponse.success(null, 'User registered successfully.');
   }
 
   @Public()
@@ -35,13 +35,13 @@ export class AuthController extends BaseController {
       loginDto.email,
       loginDto.password
     );
-    return new SuccessResponse(token);
+    return ApiResponse.success(token);
   }
 
   @Roles(Role.ADMIN)
   @Get('admin')
   getAdminData(@Request() req: any) {
-    return new SuccessResponse(
+    return ApiResponse.success(
       `Hello Admin, Your name is  ${req.user.name}`,
       'Route accessed'
     );
@@ -50,7 +50,7 @@ export class AuthController extends BaseController {
   @Roles(Role.SUPERADMIN)
   @Get('super-admin')
   getSuperAdminData(@Request() req: any) {
-    return new SuccessResponse(
+    return ApiResponse.success(
       `Hello SuperAdmin, Your name is  ${req.user.name}`,
       'Route accessed'
     );

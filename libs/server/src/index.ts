@@ -4,7 +4,6 @@ export * from './lib/dtos';
 export * from './lib/exception';
 export * from './lib/filter';
 export * from './lib/guard';
-export * from './lib/interceptor';
 export * from './lib/middleware';
 export * from './lib/schemas';
 export * from './lib/strategy';

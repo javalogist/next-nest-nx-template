@@ -5,7 +5,7 @@ import {
   IsOptional,
   MinLength,
 } from 'class-validator';
-import { Role } from '../schemas/user.schema';
+import { Role } from '../schemas';
 
 export class RegisterDto {
   @IsNotEmpty()

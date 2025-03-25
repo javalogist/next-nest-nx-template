@@ -6,7 +6,7 @@ const fetchClient = async <T>(method: string, endpoint: string, body?: any) => {
       ...(body ? { body: JSON.stringify(body) } : {})
     });
 
-    const result = await response.json();
+    const result = await response.json() as T;
     if (!response.ok) throw result; // Expecting JSON error structure
 
     return result as T;

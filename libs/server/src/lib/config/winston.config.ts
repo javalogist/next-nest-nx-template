@@ -10,6 +10,7 @@ export class WinstonConfig implements LoggerService {
   constructor(private configService: ConfigService) {
     const isProduction = process.env['NODE_ENV'] === 'production';
     const mongoUri = this.configService.get<string>('MONGO_URI');
+    const appName = this.configService.get<string>('APP_NAME');
 
     this.logger = createLogger({
       level: 'info',
@@ -19,7 +20,7 @@ export class WinstonConfig implements LoggerService {
         format.splat(),
         format.printf(({ timestamp, level, message, context }) => {
           return `${timestamp} [${
-            context || 'Kodevy-Core'
+            context || appName
           }] ${level}: ${message}`;
         })
       ),
@@ -27,23 +28,23 @@ export class WinstonConfig implements LoggerService {
         new transports.Console(),
         ...(isProduction
           ? [
-              new winstonMongoDB.MongoDB({
-                level: 'info',
-                db: mongoUri!,
-                collection: 'app_logs',
-                capped: true,
-                cappedSize: 5242880,
-              }),
-              new winstonMongoDB.MongoDB({
-                level: 'error',
-                db: mongoUri!,
-                collection: 'error_logs',
-                capped: true,
-                cappedSize: 5242880,
-              }),
-            ]
-          : []),
-      ],
+            new winstonMongoDB.MongoDB({
+              level: 'info',
+              db: mongoUri!,
+              collection: 'app_logs',
+              capped: true,
+              cappedSize: 5242880
+            }),
+            new winstonMongoDB.MongoDB({
+              level: 'error',
+              db: mongoUri!,
+              collection: 'error_logs',
+              capped: true,
+              cappedSize: 5242880
+            })
+          ]
+          : [])
+      ]
     });
   }
 

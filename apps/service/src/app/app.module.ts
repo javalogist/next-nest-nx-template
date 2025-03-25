@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { TerminusModule } from '@nestjs/terminus';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD } from '@nestjs/core';
 
 // ✅ Feature Modules
 import { AuthModule } from '../auth/auth.module';
@@ -19,13 +19,10 @@ import { ModelTransformerModule } from '../model-transformer/model-transformer.m
 import { ThrottlerGuard } from '@nestjs/throttler';
 import {
   corsConfig,
-  HttpExceptionFilter,
   JwtAuthGuard,
   jwtConfig,
-  ResponseInterceptor,
   RolesGuard,
-  throttleConfig,
-  WinstonConfig,
+  throttleConfig
 } from '@shared/server';
 
 // ✅ Global Interceptors
@@ -42,9 +39,9 @@ import {
         throttleConfig,
         jwtConfig({
           algorithm: 'HS256', // Custom property
-          audience: 'my-app', // Another new property
-        }),
-      ],
+          audience: 'my-app' // Another new property
+        })
+      ]
     }),
 
     // ✅ Configure ThrottlerModule with ConfigService
@@ -54,9 +51,9 @@ import {
       useFactory: (config: ConfigService) => [
         {
           ttl: config.get<number>('throttle.ttl'),
-          limit: config.get('throttle.limit'),
-        },
-      ],
+          limit: config.get('throttle.limit')
+        }
+      ]
     }),
 
     // ✅ MongoDB Configuration
@@ -64,10 +61,10 @@ import {
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         return {
-          uri: configService.get<string>('MONGO_URI'),
+          uri: configService.get<string>('MONGO_URI')
         };
       },
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
 
     // ✅ External Modules
@@ -77,39 +74,28 @@ import {
     // ✅ Application Feature Modules
     AuthModule,
     UserModule,
-    ModelTransformerModule,
+    ModelTransformerModule
   ],
   controllers: [AppController],
   providers: [
-    WinstonConfig,
-    // ✅ Global Exception Filter
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-
     // ✅ Global Guards (Order Matters)
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ThrottlerGuard
     },
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Auth Guard for JWT validation
+      useClass: JwtAuthGuard // Auth Guard for JWT validation
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard, // Role-based Access Control (RBAC)
+      useClass: RolesGuard // Role-based Access Control (RBAC)
     },
 
-    // ✅ Global Interceptor
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ResponseInterceptor,
-    },
 
     // ✅ Application Service
-    AppService,
-  ],
+    AppService
+  ]
 })
-export class AppModule {}
+export class AppModule {
+}

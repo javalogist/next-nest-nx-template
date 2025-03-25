@@ -26,6 +26,12 @@ export const setupSwagger = (app: INestApplication) => {
       persistAuthorization: true // Keeps JWT auth after page refresh
     }
   });
+
+  // Expose the JSON spec at /swagger-json
+  app.getHttpAdapter().get("/api/v1/swagger-json", (req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    res.send(document);
+  });
   // Generate Postman collection and save it
   // const fs = require('fs');
   // fs.writeFileSync('./postman-collection.json', JSON.stringify(document, null, 2));

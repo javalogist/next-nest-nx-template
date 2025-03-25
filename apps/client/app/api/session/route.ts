@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { redirect } from 'next/navigation';
 
 
-
 // Set token in cookies
 const setTokenInCookies = async (token: string) => {
   const decoded = jwtDecode<{ exp: number }>(token);
@@ -41,7 +40,7 @@ const setTokenInCookies = async (token: string) => {
 
 };
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     // ✅ Parse the request body correctly
     const body = await request.json();
@@ -51,14 +50,12 @@ export async function GET(request: NextRequest) {
     if (!token) redirect('/');
 
     // 🍪 Create a response with the 'Set-Cookie' header
-    const response = new NextResponse('Token stored successfully!');
     await setTokenInCookies(token);
-    return response;
+    return NextResponse.json({ message: 'Token set successfully.' });
   } catch (error: any) {
     console.error('Error parsing request body:', error);
     if (error.status === 401)
       redirect('/');
-
     return NextResponse.json(
       { message: error.message, status: error.status, details: error.details },
       { status: error.status }

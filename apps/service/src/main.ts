@@ -10,58 +10,47 @@ import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import { setupSwagger, WinstonConfig } from '@shared/server';
+import { HttpExceptionFilter, setupSwagger, WinstonConfig } from '@shared/server';
 
 const globalPrefix = 'api';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-
-  // ✅ Set Global Prefix Early
   app.setGlobalPrefix(globalPrefix);
 
   // ✅ Override NestJS Logger with Winston
   app.useLogger(app.get(WinstonConfig));
 
+  // ✅ Enable API Versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1'
+  });
+
   // ✅ Security Middleware First
   app.use(helmet());
-  app.use(
-    helmet.hsts({
-      maxAge: 31536000, // 1 year
-      includeSubDomains: true,
-      preload: true,
-    })
-  );
   app.use(cookieParser()); // Parses cookies before request logging
   app.use(compression()); // Compress responses after security middleware
 
-  // ✅ Custom Middleware Next
-  // app.use( RequestLoggerMiddleware);
-
-  // ✅ Enable API Versioning Early
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  });
-
-  // ✅ Setup Swagger after Versioning
-  setupSwagger(app);
-
   // ✅ Global Pipes - Sanitization & Validation
-  // app.useGlobalPipes(new SanitizePipe());
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Strip non-whitelisted properties
       forbidNonWhitelisted: true, // Reject requests with unknown properties
-      transform: true, // Automatically transform payloads to DTOs
+      transform: true // Automatically transform payloads to DTOs
     })
   );
 
   // ✅ Enable CORS after Security Middleware
   app.enableCors({
-    ...configService.get('cors'),
+    ...configService.get('cors')
   });
+
+  // ✅ Setup Swagger after Versioning
+  setupSwagger(app);
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // ✅ Start Listening
   const port = configService.get<number>('PORT') || 3000;

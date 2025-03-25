@@ -29,9 +29,6 @@ export default function RootLayout({
     <body>
     <AppRouterCacheProvider>
       <ThemeRegistry>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
-          <ThemeToggleButton />
-        </div>
         {children}
       </ThemeRegistry>
     </AppRouterCacheProvider>
