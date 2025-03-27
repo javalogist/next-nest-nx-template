@@ -38,18 +38,20 @@ import { JwtModule } from '@nestjs/jwt';
         process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
     }),
 
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => jwtConfig(configService),
-    }),
-
     // ✅ Configure ThrottlerModule with ConfigService
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
+      useFactory: async (configService: ConfigService) =>
         throttleConfig(configService),
+    }),
+
+    JwtModule.registerAsync({
+      global:true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) =>
+        jwtConfig(configService),
     }),
 
     // ✅ MongoDB Configuration
@@ -96,8 +98,8 @@ import { JwtModule } from '@nestjs/jwt';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestLoggerMiddleware).forRoutes({
-      path: '*', // ✅ Correct wildcard usage
-      method: RequestMethod.ALL, // Apply to all methods (GET, POST, etc.)
+      path: 'api/*path', // ✅ Correct wildcard usage
+      method: RequestMethod.ALL,
     });
   }
 }

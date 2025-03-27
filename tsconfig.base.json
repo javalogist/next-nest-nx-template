@@ -18,17 +18,21 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@shared/common": [
+        "libs/common/src/index.ts"
+      ],
       "@shared/server": [
         "libs/server/src/index.ts"
       ],
+      //For next js
       "@shared/client": [
-        "libs/client/src/index.ts"
+        "libs/client/src/client.index.ts"
       ],
       "@shared/client-async": [
-        "libs/client/src/server.ts"
+        "libs/client/src/server.index.ts"
       ],
-      "@shared/util": [
-        "libs/client/src/util.ts"
+      "@shared/client-common": [
+        "libs/client/src/common.index.ts"
       ]
     }
   },

@@ -11,75 +11,71 @@ import {
   Grid,
   Checkbox,
   Group,
-  Divider
+  Divider,
 } from '@mantine/core';
 import { useForm } from 'react-hook-form';
-import { loginSchema, signupSchema } from '../schema/auth-validation.schema';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { clientApi } from '../config/axios-client.config';
-import { ApiEndpoints } from '../util/api-endpoints';
-import { ApiResponse } from '@shared/server';
 import { useRouter } from 'next/navigation';
-import { notify, ThemeToggle } from '@shared/client';
+import ThemeToggle from '../mantine-theme/theme-toggle';
+import { loginSchema, signupSchema } from '../schema';
+import {
+  invokeIfNotNull,
+  login,
+  processApi,
+  register,
+  setSession,
+} from '../../common/index';
+import { notify } from '../mantine-notify';
 
-export const HomeComponent = () => {
+export const AuthComponent = () => {
   const router = useRouter();
 
   // ✅ Setup login form
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
-    formState: { errors: loginErrors }
+    formState: { errors: loginErrors },
   } = useForm({
-    resolver: yupResolver(loginSchema)
+    resolver: yupResolver(loginSchema),
   });
 
   // ✅ Setup signup form
   const {
     register: registerSignup,
     handleSubmit: handleSignupSubmit,
-    formState: { errors: signupErrors }
+    formState: { errors: signupErrors },
   } = useForm({
-    resolver: yupResolver(signupSchema)
+    resolver: yupResolver(signupSchema),
   });
 
   // ✅ Handle login submission
   const onLoginSubmit = async (data: any) => {
-    try {
-      notify({
-        id: 'login',
-        title: 'Authenticating...',
-        message: 'Please wait while we log you in',
-        type: 'loading'
-      });
-      const res = await clientApi.post<ApiResponse<string>>(
-        ApiEndpoints.login,
-        data
-      );
-      if (res.success) {
-        await clientApi.post<string>(ApiEndpoints.session, {
-          token: res.data
+    const apiRes = await processApi(() => login(data));
+    invokeIfNotNull(apiRes, async (r) => {
+      if (r.success) {
+        const sessionRes = await processApi(() =>
+          setSession({ token: r.data || '' })
+        );
+        invokeIfNotNull(sessionRes, async (r) => {
+          if (r.success) router.push('/swagger');
         });
-        router.push('/swagger');
       }
-    } catch (e) {
-      console.error(e);
-    }
+    });
   };
 
   // ✅ Handle signup submission
   const onSignupSubmit = async (data: any) => {
-    try {
-      const res = await clientApi.post<ApiResponse<string>>(
-        ApiEndpoints.register,
-        data
-      );
-      if (res.success) {
-        alert('Signup successful! Please log in.');
+    const apiRes = await processApi(() => register(data));
+    invokeIfNotNull(apiRes, async (r) => {
+      if (r.success) {
+        notify({
+          id: 'register',
+          title: 'Woooahhh',
+          message: 'You have been registered successfully',
+          type: 'success',
+        });
       }
-    } catch (e) {
-      console.error(e);
-    }
+    });
   };
 
   return (
@@ -90,7 +86,7 @@ export const HomeComponent = () => {
           position: 'absolute',
           top: 0,
           right: 0,
-          padding: '0.5rem'
+          padding: '0.5rem',
         }}
       >
         <ThemeToggle />
@@ -126,7 +122,13 @@ export const HomeComponent = () => {
                     error={loginErrors.password?.message}
                     withAsterisk
                   />
-                  <Button type="submit" color="blue" fullWidth size="md" mt="md">
+                  <Button
+                    type="submit"
+                    color="blue"
+                    fullWidth
+                    size="md"
+                    mt="md"
+                  >
                     Login
                   </Button>
                 </Stack>
@@ -186,13 +188,16 @@ export const HomeComponent = () => {
                       label="Admin"
                       {...registerSignup('roles.admin')}
                     />
-                    <Checkbox
-                      label="User"
-                      {...registerSignup('roles.user')}
-                    />
+                    <Checkbox label="User" {...registerSignup('roles.user')} />
                   </Group>
 
-                  <Button type="submit" color="teal" fullWidth size="md" mt="md">
+                  <Button
+                    type="submit"
+                    color="teal"
+                    fullWidth
+                    size="md"
+                    mt="md"
+                  >
                     Signup
                   </Button>
                 </Stack>

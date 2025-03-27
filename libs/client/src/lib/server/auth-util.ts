@@ -1,6 +1,8 @@
+'use server';
+
 import { redirect } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
-import { setTokenInCookies } from './token-util';
+import { setTokenInCookies } from './cookie-util';
 
 export const startUserSession = async (request: NextRequest) => {
   try {

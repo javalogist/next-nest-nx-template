@@ -3,9 +3,10 @@ import { AppService } from './app.service';
 import {
   HealthCheck,
   HealthCheckService,
-  HttpHealthIndicator
+  HttpHealthIndicator,
 } from '@nestjs/terminus';
-import { ApiResponse, BaseController, Public } from '@shared/server';
+import { BaseController, Public } from '@shared/server';
+import { ApiResponse } from '@shared/common';
 
 @Controller()
 export class AppController extends BaseController {
@@ -22,7 +23,7 @@ export class AppController extends BaseController {
   @HealthCheck()
   async checkHealth() {
     const data = await this.healthCheckService.check([
-      () => this.http.pingCheck('nestjs', 'https://docs.nestjs.com')
+      () => this.http.pingCheck('nestjs', 'https://docs.nestjs.com'),
     ]);
     return ApiResponse.success(data, 'Health check completed successfully');
   }

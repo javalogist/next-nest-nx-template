@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
-  ApiResponse,
   BaseController,
   LoginDto,
   Public,
@@ -9,6 +8,7 @@ import {
   Role,
   Roles
 } from '@shared/server';
+import { ApiResponse } from '@shared/common';
 
 @Controller('auth')
 export class AuthController extends BaseController {

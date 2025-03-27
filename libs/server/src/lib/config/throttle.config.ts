@@ -6,8 +6,8 @@ export const throttleConfig = (
 ): ThrottlerModuleOptions => ({
   throttlers: [
     {
-      ttl: configService.get<number>('THROTTLE_TTL', 60), // Time in seconds
-      limit: configService.get<number>('THROTTLE_LIMIT', 10), // Max requests allowed
+      ttl: configService.get<number>('THROTTLE_TTL',0), // Time in seconds
+      limit: configService.get<number>('THROTTLE_LIMIT',0), // Max requests allowed
     },
   ],
 });

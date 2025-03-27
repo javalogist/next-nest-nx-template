@@ -1,5 +1,5 @@
-import { HomeComponent } from '../component/home-component';
+import { AuthComponent } from '@shared/client';
 
 export default function Home() {
-  return <HomeComponent/>;
+  return <AuthComponent />;
 }
