@@ -7,6 +7,12 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  //For Mantine Un-comment this
+  reactStrictMode: true,
+  compiler: {
+    emotion: true,
+  },
+
   output:"standalone",
   nx: {
     // Set this to true if you would like to use SVGR

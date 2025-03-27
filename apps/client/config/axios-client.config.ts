@@ -1,3 +1,4 @@
+
 const fetchClient = async <T>(method: string, endpoint: string, body?: any) => {
   try {
     const response = await fetch(endpoint, {
@@ -6,19 +7,12 @@ const fetchClient = async <T>(method: string, endpoint: string, body?: any) => {
       ...(body ? { body: JSON.stringify(body) } : {})
     });
 
-    const result = await response.json() as T;
+    const result = await response.json();
     if (!response.ok) throw result; // Expecting JSON error structure
 
     return result as T;
   } catch (e: any) {
-    console.error('Client API error occurred: ', e);
-    //Todo: handle notification here
-
-    // showTurNotification(
-    //   'Oops, something went wrong!',
-    //   'Please try again or contact IT support.',
-    //   'error'
-    // );
+    console.log('API Error occurred:', e);
     throw e;
   }
 };

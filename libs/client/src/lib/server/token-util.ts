@@ -33,3 +33,8 @@ export const setTokenInCookies = async (token: string) => {
     maxAge,
   });
 };
+
+export const getTokenFromCookies = async () => {
+  const cookieStore = await cookies();
+  return cookieStore.get('access_token')?.value || '';
+};

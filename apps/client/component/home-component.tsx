@@ -2,132 +2,213 @@
 import {
   Container,
   Paper,
-  TextField,
-  Typography,
+  TextInput,
+  Title,
+  Text,
   Button,
   Stack,
-  Box
-} from '@mui/material';
+  Box,
+  Grid,
+  Checkbox,
+  Group,
+  Divider
+} from '@mantine/core';
 import { useForm } from 'react-hook-form';
-import { loginSchema } from '../schema/auth-validation.schema';
+import { loginSchema, signupSchema } from '../schema/auth-validation.schema';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { clientApi } from '../config/axios-client.config';
 import { ApiEndpoints } from '../util/api-endpoints';
 import { ApiResponse } from '@shared/server';
 import { useRouter } from 'next/navigation';
-import ThemeToggleButton from '../theme/theme-toggle';
+import { notify, ThemeToggle } from '@shared/client';
 
 export const HomeComponent = () => {
-
   const router = useRouter();
 
-  // ✅ Setup form with react-hook-form and yup
+  // ✅ Setup login form
   const {
-    register,
-    handleSubmit,
-    formState: { errors }
+    register: registerLogin,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors }
   } = useForm({
     resolver: yupResolver(loginSchema)
   });
 
-  // ✅ Handle form submission (for now, just log the data)
-  const onSubmit = async (data: any) => {
+  // ✅ Setup signup form
+  const {
+    register: registerSignup,
+    handleSubmit: handleSignupSubmit,
+    formState: { errors: signupErrors }
+  } = useForm({
+    resolver: yupResolver(signupSchema)
+  });
+
+  // ✅ Handle login submission
+  const onLoginSubmit = async (data: any) => {
     try {
+      notify({
+        id: 'login',
+        title: 'Authenticating...',
+        message: 'Please wait while we log you in',
+        type: 'loading'
+      });
       const res = await clientApi.post<ApiResponse<string>>(
         ApiEndpoints.login,
         data
       );
       if (res.success) {
-        const sessionRes = await clientApi.post<string>(ApiEndpoints.session, { token: res.data });
+        await clientApi.post<string>(ApiEndpoints.session, {
+          token: res.data
+        });
         router.push('/swagger');
       }
     } catch (e) {
       console.error(e);
     }
   };
+
+  // ✅ Handle signup submission
+  const onSignupSubmit = async (data: any) => {
+    try {
+      const res = await clientApi.post<ApiResponse<string>>(
+        ApiEndpoints.register,
+        data
+      );
+      if (res.success) {
+        alert('Signup successful! Please log in.');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return (
     <>
+      {/* ✅ Theme Toggle Positioned Absolutely */}
       <Box
-        sx={{
+        style={{
           position: 'absolute',
           top: 0,
           right: 0,
           padding: '0.5rem'
         }}
       >
-        <ThemeToggleButton />
+        <ThemeToggle />
       </Box>
-      <Container maxWidth="sm" sx={{ marginTop: '5rem', position: 'relative' }}>
-        {/* ✅ Toggle Button Positioned Absolutely */}
 
+      <Container size="lg" style={{ marginTop: '5rem', position: 'relative' }}>
+        <Title order={2} ta="center" mb="xl" c="blue">
+          Welcome Back or Join Us!
+        </Title>
 
-        <Paper
-          elevation={4}
-          sx={{
-            padding: '2rem',
-            textAlign: 'center',
-            backgroundColor: 'background.paper'
-          }}
-        >
-          <Typography variant="h4" color="primary" gutterBottom>
-            Welcome Back!
-          </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph>
-            Please login to your account to continue.
-          </Typography>
-
-          {/* ✅ Login Form */}
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Stack spacing={3}>
-              <TextField
-                label="Email"
-                type="email"
-                variant="outlined"
-                fullWidth
-                {...register('email')}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-              />
-              <TextField
-                label="Password"
-                type="password"
-                variant="outlined"
-                fullWidth
-                {...register('password')}
-                error={!!errors.password}
-                helperText={errors.password?.message}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                fullWidth
-              >
+        <Grid gutter="xl">
+          {/* ✅ Login Section */}
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Paper shadow="xl" p="xl" radius="md" withBorder>
+              <Title order={3} mb="md" ta="center">
                 Login
-              </Button>
-            </Stack>
-          </form>
+              </Title>
+              <form onSubmit={handleLoginSubmit(onLoginSubmit)} noValidate>
+                <Stack gap="md">
+                  <TextInput
+                    label="Email"
+                    type="email"
+                    placeholder="Enter your email"
+                    {...registerLogin('email')}
+                    error={loginErrors.email?.message}
+                    withAsterisk
+                  />
+                  <TextInput
+                    label="Password"
+                    type="password"
+                    placeholder="Enter your password"
+                    {...registerLogin('password')}
+                    error={loginErrors.password?.message}
+                    withAsterisk
+                  />
+                  <Button type="submit" color="blue" fullWidth size="md" mt="md">
+                    Login
+                  </Button>
+                </Stack>
+              </form>
+            </Paper>
+          </Grid.Col>
 
-          {/* ✅ Signup Button */}
-          <Box sx={{ marginTop: '1rem' }}>
-            <Typography variant="body2" color="text.secondary">
-              Don’t have an account?
-            </Typography>
-            <Button variant="outlined" color="secondary" size="large" fullWidth>
-              Signup
-            </Button>
-          </Box>
-        </Paper>
+          {/* ✅ Signup Section */}
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Paper shadow="xl" p="xl" radius="md" withBorder>
+              <Title order={3} mb="md" ta="center">
+                Signup
+              </Title>
+              <form onSubmit={handleSignupSubmit(onSignupSubmit)} noValidate>
+                <Stack gap="md">
+                  <TextInput
+                    label="Name"
+                    placeholder="Enter your name"
+                    {...registerSignup('name')}
+                    error={signupErrors.name?.message}
+                    withAsterisk
+                  />
+                  <TextInput
+                    label="Email"
+                    type="email"
+                    placeholder="Enter your email"
+                    {...registerSignup('email')}
+                    error={signupErrors.email?.message}
+                    withAsterisk
+                  />
+                  <TextInput
+                    label="Password"
+                    type="password"
+                    placeholder="Enter your password"
+                    {...registerSignup('password')}
+                    error={signupErrors.password?.message}
+                    withAsterisk
+                  />
+                  <TextInput
+                    label="Confirm Password"
+                    type="password"
+                    placeholder="Confirm your password"
+                    {...registerSignup('confirmPassword')}
+                    error={signupErrors.confirmPassword?.message}
+                    withAsterisk
+                  />
+                  {/* ✅ Role Selection */}
+                  <Group mt="xs">
+                    <Text size="sm" fw={500}>
+                      Select Roles:
+                    </Text>
+                    <Checkbox
+                      label="Super-Admin"
+                      {...registerSignup('roles.superAdmin')}
+                    />
+                    <Checkbox
+                      label="Admin"
+                      {...registerSignup('roles.admin')}
+                    />
+                    <Checkbox
+                      label="User"
+                      {...registerSignup('roles.user')}
+                    />
+                  </Group>
 
-        {/* ✅ Footer */}
-        <Box sx={{ marginTop: '3rem', textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
+                  <Button type="submit" color="teal" fullWidth size="md" mt="md">
+                    Signup
+                  </Button>
+                </Stack>
+              </form>
+            </Paper>
+          </Grid.Col>
+        </Grid>
+
+        {/* ✅ Footer Section */}
+        <Box mt="xl" style={{ textAlign: 'center' }}>
+          <Divider my="lg" />
+          <Text size="sm" c="dimmed" ta="center">
             © 2025 John Doe. All rights reserved.
-          </Typography>
+          </Text>
         </Box>
       </Container>
     </>
   );
-
 };

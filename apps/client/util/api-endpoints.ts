@@ -1,5 +1,7 @@
+export const GlobalPrefix = 'api';
 export const ApiEndpoints = {
-  login : "/api/external/auth/login",
-  session:"/api/session",
-  swagger:"/api/external/swagger-json"
-}
+  login: '/external/auth/login',
+  register: '/external/auth/register',
+  session: '/session',
+  swagger: '/external/swagger-json'
+};

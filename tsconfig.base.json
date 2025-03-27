@@ -26,6 +26,9 @@
       ],
       "@shared/client-async": [
         "libs/client/src/server.ts"
+      ],
+      "@shared/util": [
+        "libs/client/src/util.ts"
       ]
     }
   },
