@@ -11,7 +11,7 @@ import {
   Grid,
   Checkbox,
   Group,
-  Divider,
+  Divider
 } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,13 +19,11 @@ import { useRouter } from 'next/navigation';
 import ThemeToggle from '../mantine-theme/theme-toggle';
 import { loginSchema, signupSchema } from '../schema';
 import {
-  invokeIfNotNull,
-  login,
-  processApi,
-  register,
-  setSession,
+  checkSystemHealth,
+  executeSequentially,
+  login
 } from '../../common/index';
-import { notify } from '../mantine-notify';
+import { setTokenInCookies } from '@shared/client-async';
 
 export const AuthComponent = () => {
   const router = useRouter();
@@ -34,48 +32,66 @@ export const AuthComponent = () => {
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
-    formState: { errors: loginErrors },
+    formState: { errors: loginErrors }
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(loginSchema)
   });
 
   // ✅ Setup signup form
   const {
     register: registerSignup,
     handleSubmit: handleSignupSubmit,
-    formState: { errors: signupErrors },
+    formState: { errors: signupErrors }
   } = useForm({
-    resolver: yupResolver(signupSchema),
+    resolver: yupResolver(signupSchema)
   });
 
-  // ✅ Handle login submission
+  // // ✅ Handle login submission
+  // const onLoginSubmit2 = async (data: any) => {
+  //   const apiRes = await processApi(() => login(data));
+  //   invokeIfNotNull(apiRes, async (r) => {
+  //     if (r.success) {
+  //       const sessionRes = await processApi(() =>
+  //         setSession({ token: r.data || '' })
+  //       );
+  //       invokeIfNotNull(sessionRes, async (r) => {
+  //         if (r.success) {
+  //           router.push('/swagger');
+  //         }
+  //       });
+  //     }
+  //   });
+  // };
+
   const onLoginSubmit = async (data: any) => {
-    const apiRes = await processApi(() => login(data));
-    invokeIfNotNull(apiRes, async (r) => {
-      if (r.success) {
-        const sessionRes = await processApi(() =>
-          setSession({ token: r.data || '' })
-        );
-        invokeIfNotNull(sessionRes, async (r) => {
-          if (r.success) router.push('/swagger');
-        });
-      }
-    });
+    const result = await executeSequentially({
+        login: () => login(data),
+        session: async(prev) => await setTokenInCookies(prev!.login!),
+        health:  (prev) =>  checkSystemHealth()
+      },
+      {
+        flowName: 'Logging you inn!',
+        finalSuccessMessage: 'Logged in successfully!'
+      });
+
+    if (result?.login && result?.session && result?.health) {
+      router.push('/swagger');
+    }
   };
 
   // ✅ Handle signup submission
   const onSignupSubmit = async (data: any) => {
-    const apiRes = await processApi(() => register(data));
-    invokeIfNotNull(apiRes, async (r) => {
-      if (r.success) {
-        notify({
-          id: 'register',
-          title: 'Woooahhh',
-          message: 'You have been registered successfully',
-          type: 'success',
-        });
-      }
-    });
+    // const apiRes = await processApi(() => register(data));
+    // invokeIfNotNull(apiRes, async (r) => {
+    //   if (r.success) {
+    //     notify({
+    //       id: 'register',
+    //       title: 'Woooahhh',
+    //       message: 'You have been registered successfully',
+    //       type: 'success'
+    //     });
+    //   }
+    // });
   };
 
   return (
@@ -86,7 +102,7 @@ export const AuthComponent = () => {
           position: 'absolute',
           top: 0,
           right: 0,
-          padding: '0.5rem',
+          padding: '0.5rem'
         }}
       >
         <ThemeToggle />

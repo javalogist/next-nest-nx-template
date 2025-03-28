@@ -10,8 +10,7 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "personal-portfolio:build",
-        "dev": true,
-        "proxyConfig": "apps/personal-portfolio/proxy.conf.json"
+        "dev": true
       },
       "configurations": {
         "development": {

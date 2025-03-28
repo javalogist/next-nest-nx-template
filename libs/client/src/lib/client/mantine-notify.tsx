@@ -1,4 +1,4 @@
-import { showNotification, updateNotification, cleanNotifications } from '@mantine/notifications';
+import { showNotification, updateNotification, cleanNotifications, hideNotification } from '@mantine/notifications';
 import { IconCheck, IconX, IconInfoCircle } from '@tabler/icons-react';
 
 
@@ -52,9 +52,12 @@ export const updateNotify = ({ id, title, message, type }: NotifyProps) => {
     message,
     color: type === 'error' ? 'red' : type === 'success' ? 'teal' : 'blue',
     icon: type === 'success' ? <IconCheck size={20} /> : <IconX size={20} />,
+    loading: type === 'loading',
     autoClose: 3000
   });
 };
 
 // ✅ Clear all notifications
-export const clearNotifications = () => cleanNotifications();
+export const clearAllNotifications = () => cleanNotifications();
+
+export const clearNotification = (notificationId:string) => hideNotification(notificationId);

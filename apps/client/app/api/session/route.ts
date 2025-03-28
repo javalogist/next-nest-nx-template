@@ -1,6 +1,6 @@
-import { NextRequest } from 'next/server';
-import { startUserSession } from '@shared/client-async';
+import { NextRequest, NextResponse } from 'next/server';
+
 
 export async function POST(request: NextRequest) {
-  return startUserSession(request);
+ return NextResponse.json({message:"ok"},{status:200});
 }

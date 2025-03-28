@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { deleteAllCookies, getTokenFromCookies } from '@shared/client-async';
 
 export async function middleware(request: NextRequest) {
   // ✅ Get token from cookies
-  const token = request.cookies.get('access_token')?.value;
+  const token = await getTokenFromCookies();
 
   // 🎯 Get the current path from the request
   const path = request.nextUrl.pathname;
   if (
     path.startsWith('/_next/') || // Next.js static files
-    path.startsWith('/api/') || // API routes
     path.endsWith('.ico') || // Favicon
     path.endsWith('.png') || // Images
     path.endsWith('.jpg') || // Images
@@ -34,6 +34,7 @@ export async function middleware(request: NextRequest) {
 
   // 🚨 Redirect to base route if no token and not already on the base route
   if (!token && request.nextUrl.pathname !== '/') {
+    await deleteAllCookies();
     return NextResponse.redirect(new URL('/', request.url));
   }
 

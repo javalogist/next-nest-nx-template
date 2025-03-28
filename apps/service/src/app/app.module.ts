@@ -2,7 +2,7 @@ import {
   MiddlewareConsumer,
   Module,
   NestModule,
-  RequestMethod,
+  RequestMethod
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,14 +18,12 @@ import { UserModule } from '../user/user.module';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import {
   JwtAuthGuard,
-  jwtConfig,
   mongoConfig,
   RequestLoggerMiddleware,
   RolesGuard,
   throttleConfig,
-  WinstonConfig,
+  WinstonConfig
 } from '@shared/server';
-import { JwtModule } from '@nestjs/jwt';
 
 // ✅ Global Interceptors
 
@@ -35,7 +33,7 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
-        process.env.NODE_ENV === 'development' ? '.env.development' : '.env',
+        process.env.NODE_ENV === 'development' ? '.env.development' : '.env'
     }),
 
     // ✅ Configure ThrottlerModule with ConfigService
@@ -43,15 +41,7 @@ import { JwtModule } from '@nestjs/jwt';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
-        throttleConfig(configService),
-    }),
-
-    JwtModule.registerAsync({
-      global:true,
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) =>
-        jwtConfig(configService),
+        throttleConfig(configService)
     }),
 
     // ✅ MongoDB Configuration
@@ -59,8 +49,9 @@ import { JwtModule } from '@nestjs/jwt';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) =>
-        mongoConfig(configService),
+        mongoConfig(configService)
     }),
+
 
     /**
      * ✅ External Modules
@@ -72,7 +63,7 @@ import { JwtModule } from '@nestjs/jwt';
      * ✅ Application Feature Modules
      */
     AuthModule,
-    UserModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [
@@ -80,26 +71,26 @@ import { JwtModule } from '@nestjs/jwt';
     // ✅ Global Guards (Order Matters)
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard, //For Rate limiting
+      useClass: ThrottlerGuard //For Rate limiting
     },
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Auth Guard for JWT validation
+      useClass: JwtAuthGuard // Auth Guard for JWT validation
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard, // Role-based Access Control (RBAC)
+      useClass: RolesGuard // Role-based Access Control (RBAC)
     },
 
     // ✅ Application Service
-    AppService,
-  ],
+    AppService
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestLoggerMiddleware).forRoutes({
-      path: 'api/*path', // ✅ Correct wildcard usage
-      method: RequestMethod.ALL,
+      path: '/api/*path', // ✅ Correct wildcard usage
+      method: RequestMethod.ALL
     });
   }
 }

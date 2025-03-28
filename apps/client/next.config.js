@@ -7,23 +7,28 @@ const { composePlugins, withNx } = require('@nx/next');
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  //For Mantine Un-comment this
+  // For Mantine Un-comment this
   reactStrictMode: true,
   compiler: {
     emotion: true,
   },
 
-  output:"standalone",
+  output: 'standalone',
   nx: {
     // Set this to true if you would like to use SVGR
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
+
   async rewrites() {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const GLOBAL_PREFIX = process.env.NEXT_PUBLIC_GLOBAL_PREFIX;
+    const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION;
+
     return [
       {
         source: '/api/external/:path*',
-        destination: 'http://localhost:3000/api/v1/:path*', // Proxy to Nest backend
+        destination: `${API_BASE_URL}/${GLOBAL_PREFIX}/${API_VERSION}/:path*`, // Proxy to Nest backend
       },
     ];
   },

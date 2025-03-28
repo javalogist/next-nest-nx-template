@@ -13,7 +13,6 @@ import compression from 'compression';
 import {
   corsConfig,
   HttpExceptionFilter,
-  RequestLoggerMiddleware,
   setupSwagger,
   WinstonConfig,
 } from '@shared/server';

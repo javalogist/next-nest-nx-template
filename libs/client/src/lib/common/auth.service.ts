@@ -12,5 +12,5 @@ export const register = async (body: {
   roles: string[];
 }) => await apiClient.post<ApiResponse<string>>(ApiEndpoints.register, body);
 
-export const setSession = async (body: { token: string }) =>
-  await apiClient.post<ApiResponse<string>>(ApiEndpoints.session, body);
+export const checkSystemHealth = async() => await apiClient.get<ApiResponse<string>>(ApiEndpoints.health);
+

@@ -1,5 +1,5 @@
 import { ApiResponse } from '@shared/common';
-import { getTokenFromCookies } from '../server/cookie-util';
+import { getTokenFromCookies } from '../server/actions/cookie-util';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 const GLOBAL_PREFIX = process.env.NEXT_PUBLIC_GLOBAL_PREFIX || 'api';
@@ -16,7 +16,13 @@ const fetchServer = async <T>(
     ? `/${GLOBAL_PREFIX}/${endpoint}`
     : `${BASE_URL}/${GLOBAL_PREFIX}/${API_VERSION} / ${endpoint}`;
   try {
-    const token = await getTokenFromCookies();
+    const token =
+      !isInternalCall && typeof window === 'undefined'
+        ? await getTokenFromCookies()
+        : undefined;
+
+    console.log('Token:', token || 'No token needed for internal calls');
+
     const response = await fetch(apiUrl, {
       method,
       headers: {
