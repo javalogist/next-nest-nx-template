@@ -5,6 +5,7 @@ import { MantineProvider } from '@mantine/core';
 import { themeConfig } from './theme';
 import React from 'react';
 import { Notifications } from '@mantine/notifications';
+import GlobalStyles from './global.styles';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -30,9 +31,8 @@ export default function ThemeProvider({ children, defaultColorScheme = 'light' }
   };
 
   return (
-    <MantineProvider
-      theme={theme}
-      defaultColorScheme={defaultColorScheme}>
+    <MantineProvider theme={theme} defaultColorScheme={defaultColorScheme}>
+      <GlobalStyles />
       <Notifications position="top-right" limit={5} zIndex={1000} />
       {children}
     </MantineProvider>

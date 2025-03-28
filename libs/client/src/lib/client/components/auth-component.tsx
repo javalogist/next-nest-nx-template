@@ -23,7 +23,7 @@ import {
   executeSequentially,
   login
 } from '../../common/index';
-import { setTokenInCookies } from '@shared/client-async';
+import { setTokenInCookies } from '../../server/actions/cookie-util';
 
 export const AuthComponent = () => {
   const router = useRouter();
@@ -97,17 +97,6 @@ export const AuthComponent = () => {
   return (
     <>
       {/* ✅ Theme Toggle Positioned Absolutely */}
-      <Box
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          padding: '0.5rem'
-        }}
-      >
-        <ThemeToggle />
-      </Box>
-
       <Container size="lg" style={{ marginTop: '5rem', position: 'relative' }}>
         <Title order={2} ta="center" mb="xl" c="blue">
           Welcome Back or Join Us!
@@ -223,12 +212,12 @@ export const AuthComponent = () => {
         </Grid>
 
         {/* ✅ Footer Section */}
-        <Box mt="xl" style={{ textAlign: 'center' }}>
-          <Divider my="lg" />
-          <Text size="sm" c="dimmed" ta="center">
-            © 2025 John Doe. All rights reserved.
-          </Text>
-        </Box>
+        {/*<Box mt="xl" style={{ textAlign: 'center' }}>*/}
+        {/*  <Divider my="lg" />*/}
+        {/*  <Text size="sm" c="dimmed" ta="center">*/}
+        {/*    © 2025 John Doe. All rights reserved.*/}
+        {/*  </Text>*/}
+        {/*</Box>*/}
       </Container>
     </>
   );

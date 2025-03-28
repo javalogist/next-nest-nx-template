@@ -1,96 +1,120 @@
-# Kodevy
+📚 Project Overview - next-nest-nx-template
+This project is a full-stack monorepo built with NX that manages multiple projects. The two main apps are:
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+⚡️ Next.js Client (Frontend)
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+🔥 NestJS Service (Backend)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+The monorepo is structured as follows:
 
-## Run tasks
+📂 Root Level Structure
+perl
+Copy
+Edit
+/next-nest-nx-template
+├── .idea                   # IDE settings (optional, IntelliJ/WebStorm specific)
+├── .nx                     # NX cache and workspace configuration
+├── apps                    # Application folder for Next and Nest apps
+├── dist                    # Output folder for built applications
+├── libs                    # Shared libraries between client and service
+├── node_modules            # Node dependencies
+├── .gitignore              # Git ignore config
+├── .nvmrc                  # Node version for consistency
+├── .prettierignore         # Files ignored by Prettier
+├── .prettierrc             # Prettier config for code formatting
+├── eslint.config.mjs       # ESLint config to ensure code quality
+├── nx.json                 # NX workspace settings
+├── package.json            # Project dependencies and scripts
+├── package-lock.json       # Dependency lock file
+├── README.md               # Project documentation
+├── text.txt                # Sample text file (optional)
+└── tsconfig.base.json      # Base TypeScript configuration for NX
+📂 apps - Applications
+bash
+Copy
+Edit
+/apps
+├── client                  # Next.js application (Frontend)
+│   ├── app                 # App router, pages, and layouts
+│   ├── components          # App-specific components
+│   ├── public              # Public assets like images
+│   ├── middleware.ts       # Middleware for Next APIs
+│   ├── .env                # Environment variables
+│   ├── .env.development    # Dev-specific env variables
+│   └── next-build-standalone.js  # Script for building standalone Next app
+│
+└── service                 # NestJS application (Backend)
+├── src
+│   ├── app             # Application-level settings and modules
+│   ├── assets          # Static files/assets
+│   ├── auth            # Auth module (JWT, guards, strategies)
+│   ├── user            # User module for business logic
+│   └── main.ts         # Application entry point
+└── webpack.config.js   # Webpack configuration for NestJS build
+📚 libs - Shared Code
+graphql
+Copy
+Edit
+/libs
+├── client                  # Shared client-side code for Next apps
+│   ├── components          # Reusable UI components
+│   ├── mantine-theme       # Mantine theme and configurations
+│   ├── mui-theme           # MUI theme and styles
+│   ├── schemas             # Form validation schemas
+│   └── mantine-notify      # Notification utilities for Mantine
+│
+├── common                  # Shared code between Next and Nest apps
+│   ├── api-response-model  # API response model for consistency
+│   ├── api.client.ts       # API client for fetching APIs
+│   ├── api-endpoints.ts    # API route definitions
+│   ├── api-util.ts         # Utility functions for handling APIs
+│   └── auth-service        # Auth utility functions for Next.js
+│
+└── server                  # Shared server-side code for Nest apps
+├── config              # Configs for CORS, JWT, MongoDB, Swagger, etc.
+├── decorators          # Custom decorators like @Public and @Role
+├── dtos                # DTOs (Data Transfer Objects)
+├── exceptions          # Exception handling classes
+├── filters             # Global HTTP exception filters
+├── guard               # Auth guards (JWT, Role-based)
+├── middleware          # Middleware (request logging, etc.)
+├── schemas             # MongoDB schemas
+├── strategy            # JWT Passport strategy
+├── utils               # Utility functions like bcrypt, etc.
+└── base.controller.ts  # Base controller logic (extends functionality)
+📂 dist - Build Output
+bash
+Copy
+Edit
+/dist
+├── client                  # Standalone build for Next.js app
+└── service                 # Build output for NestJS app
+📜 Project Highlights
+✅ TypeScript & Linting: Strict typing with shared tsconfigs and ESLint rules.
+✅ Authentication: JWT-based auth, Guards, and Middleware for secure APIs.
+✅ Standalone Builds: Using next-build-standalone.js for optimized Next.js deployment.
+✅ Shared Code: Reuse models, DTOs, and utilities between the frontend and backend.
+✅ API Consistency: Consistent API responses using api-response-model shared in common.
 
-To run tasks with Nx use:
+🚀 Getting Started
+bash
+Copy
+Edit
+# Install dependencies
+npm install
 
-```sh
-npx nx <target> <project-name>
-```
+# Run Next.js app
+npx nx run client:dev
 
-For example:
+# Run NestJS service
+npx nx run service:dev
 
-```sh
-npx nx build myproject
-```
+# Build applications
+npx nx build client
+npx nx build service
+🎉 Future Enhancements
+💡 Add more services and client apps to scale.
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+📚 Create a documentation site using Storybook.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
-```
-
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
-
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
-
-# Generate a library
-npx nx g @nx/react:lib some-lib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+🔥 Implement GraphQL API in addition to REST.

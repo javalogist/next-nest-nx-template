@@ -2,3 +2,16 @@
 @layer mantine {
     /* This ensures Mantine styles take precedence */
 }
+
+body {
+    background-color: var(--mantine-color-body);
+    color: var(--mantine-color-text);
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
+}
+
+
