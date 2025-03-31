@@ -1,5 +1,6 @@
 import { ApiResponse } from '@shared/common';
-import { getTokenFromCookies } from '../server/actions/cookie-util';
+import { getTokenFromCookies } from '../actions/token-action';
+import { redirect } from 'next/navigation';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 const GLOBAL_PREFIX = process.env.NEXT_PUBLIC_GLOBAL_PREFIX || 'api';
@@ -12,15 +13,17 @@ const fetchServer = async <T>(
   body?: any
 ) => {
   const isInternalCall = isProxy || endpoint.startsWith('/external') || false;
+  console.log('the value is ', isInternalCall);
   const apiUrl = isInternalCall
     ? `/${GLOBAL_PREFIX}/${endpoint}`
-    : `${BASE_URL}/${GLOBAL_PREFIX}/${API_VERSION} / ${endpoint}`;
+    : `${BASE_URL}/${GLOBAL_PREFIX}/${API_VERSION}/${endpoint}`;
   try {
     const token =
       !isInternalCall && typeof window === 'undefined'
         ? await getTokenFromCookies()
         : undefined;
 
+    console.log('The resolving is ', !isInternalCall && typeof window === 'undefined');
     console.log('Token:', token || 'No token needed for internal calls');
 
     const response = await fetch(apiUrl, {
@@ -29,13 +32,17 @@ const fetchServer = async <T>(
         'Content-Type': 'application/json',
         ...(token
           ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : {}),
+            Authorization: `Bearer ${token}`
+          }
+          : {})
       },
-      ...(body ? { body: JSON.stringify(body) } : {}),
+      ...(body ? { body: JSON.stringify(body) } : {})
     });
-
+    if (response.status === 401) {
+      redirect('/');
+    } else if (response.status === 403) {
+      //Forbidden access
+    }
     if (!response.ok) throw await response.json();
 
     return (await response.json()) as T;
@@ -61,5 +68,5 @@ export const apiClient = {
   put: async <T>(endpoint: string, body: any, isProxy = false) =>
     fetchServer<T>('PUT', endpoint, isProxy, body),
   delete: async <T>(endpoint: string, isProxy = false) =>
-    fetchServer<T>('DELETE', endpoint, isProxy),
+    fetchServer<T>('DELETE', endpoint, isProxy)
 };

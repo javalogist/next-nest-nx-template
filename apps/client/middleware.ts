@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { deleteAllCookies, getTokenFromCookies } from '@shared/client-async';
+import { deleteAllCookies, getTokenFromCookies } from '@shared/client';
 
 export async function middleware(request: NextRequest) {
   // ✅ Get token from cookies

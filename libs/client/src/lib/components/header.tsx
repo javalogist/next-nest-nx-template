@@ -3,31 +3,35 @@ import { Box, Container, Group, Button, Text } from '@mantine/core';
 import Link from 'next/link';
 import { ThemeToggle } from '../mantine-theme';
 
-export const  AppHeader =() => {
+export const AppHeader = () => {
   return (
     <Box
       component="header"
       bg="var(--mantine-color-body)" // Inherits background from theme
       p="md"
       style={{
-        borderBottom: '1px solid var(--mantine-color-gray-4)', // Dynamic border based on theme
+        borderBottom: '1px solid var(--mantine-color-gray-4)' // Dynamic border based on theme
       }}
     >
       <Container size="lg">
         <Group p="apart">
           {/* Logo / Title */}
-          <Text size="lg" fw={700} c="blue.6">
+          <Text
+            component="a"
+            href="/" // Target URL
+            size="lg" fw={700} c="blue.6"
+          style={{cursor:'pointer'}}>
             🚀 NX Full Stack Template
           </Text>
 
           {/* Action Items */}
           <Group>
-            <Link href="/login" passHref>
+            <Link href="/auth" passHref>
               <Button variant="subtle" size="sm">
                 Login
               </Button>
             </Link>
-            <Link href="/api-docs" passHref>
+            <Link href="/swagger" passHref>
               <Button variant="subtle" size="sm">
                 Swagger
               </Button>
@@ -49,4 +53,4 @@ export const  AppHeader =() => {
       </Container>
     </Box>
   );
-}
+};

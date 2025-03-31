@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { apiClient, ApiEndpoints } from '../../common/index';
+import { apiClient } from '../config';
+import { ApiEndpoints } from '../util';
 
 // Import the web component safely
 if (typeof window !== 'undefined') {
@@ -36,7 +37,7 @@ const SwaggerUI = () => {
   return (
     <div>
       {React.createElement('openapi-explorer', {
-        'server-url': 'http://localhost:3000',
+        'server-url': 'http://localhost:3000'
       })}
     </div>
   );

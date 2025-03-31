@@ -1,4 +1,4 @@
-import { clearNotification, clearAllNotifications, notify, updateNotify } from '../client/mantine-notify';
+import { notify, updateNotify } from '../config/mantine-notify';
 import { ApiResponse } from '@shared/common';
 //
 // export async function processApi<T>(

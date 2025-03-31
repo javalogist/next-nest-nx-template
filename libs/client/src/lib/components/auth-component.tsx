@@ -18,12 +18,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from '../mantine-theme/theme-toggle';
 import { loginSchema, signupSchema } from '../schema';
-import {
-  checkSystemHealth,
-  executeSequentially,
-  login
-} from '../../common/index';
-import { setTokenInCookies } from '../../server/actions/cookie-util';
+import { setTokenInCookies } from '../actions';
+import { executeSequentially } from '../util';
+import { login } from '../service';
 
 export const AuthComponent = () => {
   const router = useRouter();
@@ -66,15 +63,14 @@ export const AuthComponent = () => {
   const onLoginSubmit = async (data: any) => {
     const result = await executeSequentially({
         login: () => login(data),
-        session: async(prev) => await setTokenInCookies(prev!.login!),
-        health:  (prev) =>  checkSystemHealth()
+        session: async (prev) => await setTokenInCookies(prev!.login!)
       },
       {
         flowName: 'Logging you inn!',
         finalSuccessMessage: 'Logged in successfully!'
       });
 
-    if (result?.login && result?.session && result?.health) {
+    if (result?.login && result?.session) {
       router.push('/swagger');
     }
   };

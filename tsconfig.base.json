@@ -26,13 +26,7 @@
       ],
       //For next js
       "@shared/client": [
-        "libs/client/src/client.index.ts"
-      ],
-      "@shared/client-async": [
-        "libs/client/src/server.index.ts"
-      ],
-      "@shared/client-common": [
-        "libs/client/src/common.index.ts"
+        "libs/client/src/index.ts"
       ]
     }
   },

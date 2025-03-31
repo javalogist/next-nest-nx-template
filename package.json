@@ -1,15 +1,15 @@
 {
-  "name": "@kodevy/source",
+  "name": "@next-nest-nx-template/source",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build:portfolio": "nx build personal-portfolio",
+    "build:client": "nx build client",
     "build:service": "nx build service",
     "build:all": "nx run-many --target=build --all",
-    "serve:portfolio": "nx serve personal-portfolio",
+    "serve:client": "nx serve client",
     "serve:service": "nx serve service",
-    "serve:all": "concurrently \"nx serve personal-portfolio\" \"nx serve service\"",
-    "start:portfolio": "npm run build:portfolio && npm run serve:portfolio",
+    "serve:all": "concurrently \"nx serve client\" \"nx serve service\"",
+    "start:client": "npm run build:client && npm run serve:client",
     "start:service": "npm run build:service && npm run serve:service",
     "start:all": "npm run serve:all",
     "clean": "nx reset && rm -rf dist"

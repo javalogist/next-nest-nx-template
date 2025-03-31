@@ -17,6 +17,7 @@ export class AppController extends BaseController {
   }
 
   @Get('health')
+  @Public()
   @HealthCheck()
   async checkHealth() {
     const data = await this.healthCheckService.check([

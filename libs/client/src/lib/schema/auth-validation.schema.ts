@@ -1,4 +1,3 @@
-// utils/validationSchema.js
 import * as yup from 'yup';
 
 // ✅ Define login form validation schema
